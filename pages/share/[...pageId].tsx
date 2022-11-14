@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         destination: `/share/${foundPage.space?.domain}/${foundPage.page.path}`,
-        permanent: true
+        permanent: false
       }
     };
   }
