@@ -2,8 +2,8 @@
 import type { GetServerSideProps } from 'next';
 import { validate } from 'uuid';
 
-import charmClient from 'charmClient';
 import PublicPageComponent from 'components/share/PublicPage';
+import { getPublicPageByIdOrPath } from 'lib/pages/getPublicPageById';
 
 export default function PublicPage () {
 
@@ -11,11 +11,10 @@ export default function PublicPage () {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const pageId = context.query.id;
-  const pageIdOrPath = pageId instanceof Array ? pageId.join('/') : pageId as string;
+  const pageId = context.query.id as string[];
 
   if (validate(pageId?.[0] || '')) {
-    const foundPage = await charmClient.getPublicPage(pageIdOrPath);
+    const foundPage = await getPublicPageByIdOrPath(pageId);
     return {
       redirect: {
         destination: `/share/${foundPage.space?.domain}/${foundPage.page.path}`,
