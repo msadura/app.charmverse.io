@@ -9,7 +9,6 @@ import { useWeb3React } from '@web3-react/core';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { validate } from 'uuid';
 
 import charmClient from 'charmClient';
 import BoardPage from 'components/[pageId]/BoardPage';
@@ -47,8 +46,7 @@ const LayoutContainer = styled.div`
   height: 100%;
 `;
 
-export default function PublicPage () {
-
+export default function PublicPage ({ notFound }: { notFound: boolean }) {
   const { account } = useWeb3React();
   const { setUser } = useUser();
   const { walletAuthSignature } = useWeb3AuthSig();
@@ -167,7 +165,7 @@ export default function PublicPage () {
     return <ErrorPage message={'Sorry, that space doesn\'t exist'} />;
   }
 
-  if (pageNotFound) {
+  if (pageNotFound || notFound) {
     return <ErrorPage message={'Sorry, that page doesn\'t exist'} />;
   }
 
