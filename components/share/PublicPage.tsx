@@ -80,11 +80,6 @@ export default function PublicPage () {
     let foundPage: PublicPageResponse | null = null;
 
     try {
-      if (validate(router.query.pageId?.[0] || '')) {
-        foundPage = await charmClient.getPublicPage(pageIdOrPath);
-        foundSpace = foundPage.space;
-        router.replace(`/share/${foundSpace?.domain}/${foundPage.page.path}`);
-      }
       if (!foundPage) {
         foundSpace = await charmClient.getSpaceByDomain(spaceDomain);
         if (foundSpace) {
