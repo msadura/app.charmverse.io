@@ -63,7 +63,7 @@ export default function PublicPage ({ notFound }: { notFound: boolean }) {
   const [, setTitleState] = usePageTitle();
   // keep track of the pageId by path since currentPageId may change when a page is viewed inside a modal
   const [basePageId, setBasePageId] = useState('');
-  const [pageNotFound, setPageNotFound] = useState(false);
+  const [pageNotFound, setPageNotFound] = useState(notFound);
   const isBountiesPage = router.query.pageId?.[1] === 'bounties';
 
   const pagePermissions = getPagePermissions(basePageId);
@@ -129,14 +129,15 @@ export default function PublicPage ({ notFound }: { notFound: boolean }) {
   }
 
   useEffect(() => {
-
-    onLoad();
+    if (!notFound) {
+      onLoad();
+    }
 
     return () => {
       setCurrentPageId('');
     };
 
-  }, []);
+  }, [notFound]);
 
   useEffect(() => {
     if (account && walletAuthSignature && lowerCaseEqual(account, walletAuthSignature.address)) {
