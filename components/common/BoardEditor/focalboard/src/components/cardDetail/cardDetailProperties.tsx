@@ -136,10 +136,9 @@ const CardDetailProperties = React.memo((props: Props) => {
   return (
     <div className='octo-propertylist'>
       {board.fields.cardProperties.map((propertyTemplate: IPropertyTemplate) => {
-        const propertyValue = card.fields.properties[propertyTemplate.id];
         return (
           <div
-            key={`${propertyTemplate.id}-${propertyTemplate.type}-${propertyValue}`}
+            key={`${propertyTemplate.id}-${propertyTemplate.type}`}
             className='octo-propertyrow'
           >
             {props.readOnly && <div className='octo-propertyname octo-propertyname--readonly'>{propertyTemplate.name}</div>}
