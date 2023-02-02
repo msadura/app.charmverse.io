@@ -133,7 +133,7 @@ export function CommentsSidebar({ inline }: BoxProps & { inline?: boolean }) {
         }
       }
     }
-  }, [allThreads, router.query.commentId]);
+  }, [router.query.commentId]);
 
   return (
     <>
