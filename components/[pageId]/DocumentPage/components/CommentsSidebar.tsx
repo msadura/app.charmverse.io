@@ -116,9 +116,18 @@ export function CommentsSidebar({ inline }: BoxProps & { inline?: boolean }) {
         if (highlightedCommentDomNode) {
           setTimeout(() => {
             setCurrentPageActionDisplay('comments');
+
+            const removeQueryParam = (param: string) => {
+              const { pathname, query }: any = router;
+              const params = new URLSearchParams(query);
+              params.delete(param);
+              router.replace({ pathname, query: params.toString() }, undefined, { shallow: true });
+            };
+
             setThreadFilter('all');
             // Remove query parameters from url
-            setUrlWithoutRerender(router.pathname, { commentId: null });
+            removeQueryParam('commentId');
+
             requestAnimationFrame(() => {
               highlightedCommentDomNode.scrollIntoView({
                 behavior: 'smooth'
@@ -133,7 +142,7 @@ export function CommentsSidebar({ inline }: BoxProps & { inline?: boolean }) {
         }
       }
     }
-  }, [router.query.commentId]);
+  }, [allThreads, router.query.commentId]);
 
   return (
     <>
