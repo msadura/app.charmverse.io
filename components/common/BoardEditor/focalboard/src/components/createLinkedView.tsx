@@ -1,8 +1,11 @@
+import { useTheme } from '@emotion/react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { Box, Collapse, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 
 import Button from 'components/common/Button';
+import { MobileDialog } from 'components/common/MobileDialog/MobileDialog';
+import { useMdScreen } from 'hooks/useMediaScreens';
 
 import { StyledSidebar } from './viewSidebar/viewSidebar';
 import type { DatabaseSourceProps } from './viewSidebar/viewSourceOptions';
@@ -14,6 +17,9 @@ type SidebarState = 'select-source' | null;
 
 export function CreateLinkedView(props: CreateLinkedViewProps) {
   const [sidebarState, setSidebarState] = useState<SidebarState>('select-source');
+  const theme = useTheme();
+  const isMdScreen = useMdScreen();
+
   function openSidebar() {
     setSidebarState(!sidebarState ? 'select-source' : null);
   }
@@ -45,15 +51,25 @@ export function CreateLinkedView(props: CreateLinkedViewProps) {
           </Typography>
         </Stack>
       </Box>
-      <Collapse in={props.readOnly === true ? false : Boolean(sidebarState)} orientation='horizontal'>
-        <StyledSidebar
-          style={{
-            height: 'fit-content'
-          }}
+      {isMdScreen ? (
+        <Collapse in={props.readOnly === true ? false : Boolean(sidebarState)} orientation='horizontal'>
+          <StyledSidebar
+            style={{
+              height: 'fit-content'
+            }}
+          >
+            <ViewSourceOptions {...props} title='Select data source' closeSidebar={closeSidebar} />
+          </StyledSidebar>
+        </Collapse>
+      ) : (
+        <MobileDialog
+          open={props.readOnly === true ? false : Boolean(sidebarState)}
+          PaperProps={{ sx: { background: theme.palette.background.light } }}
+          contentSx={{ pr: 0, pb: 0, pl: 1 }}
         >
           <ViewSourceOptions {...props} title='Select data source' closeSidebar={closeSidebar} />
-        </StyledSidebar>
-      </Collapse>
+        </MobileDialog>
+      )}
     </Box>
   );
 }

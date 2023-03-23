@@ -7,6 +7,7 @@ import { MenuContext, useMenuContext } from './menu/menuContext';
 type Props = {
   children?: React.ReactNode;
   stopPropagationOnToggle?: boolean;
+  onClose?: () => void;
   className?: string;
   disabled?: boolean;
   isOpen?: boolean;
@@ -43,6 +44,9 @@ function MenuWrapper(props: Props) {
   useEffect(() => {
     const close = (): void => {
       setOpen(false);
+      if (props.onClose) {
+        props.onClose();
+      }
     };
 
     const closeOnBlur = (e: Event) => {

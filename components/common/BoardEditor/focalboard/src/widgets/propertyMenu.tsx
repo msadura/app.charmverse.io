@@ -82,17 +82,22 @@ export const propertyTypesList: PropertyType[] = [
 type TypesProps = {
   label: string;
   onTypeSelected: (type: PropertyType) => void;
+  isMobile?: boolean;
 };
 
 export function PropertyTypes(props: TypesProps): JSX.Element {
   const intl = useIntl();
   return (
     <>
-      <Menu.Label>
-        <b>{props.label}</b>
-      </Menu.Label>
+      {!props.isMobile && (
+        <>
+          <Menu.Label>
+            <b>{props.label}</b>
+          </Menu.Label>
 
-      <Menu.Separator />
+          <Menu.Separator />
+        </>
+      )}
 
       {propertyTypesList.map((type) => (
         <Menu.Text key={type} id={type} name={typeDisplayName(intl, type)} onClick={() => props.onTypeSelected(type)} />
