@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { MobileDialog } from 'components/common/MobileDialog/MobileDialog';
-import { useMdScreen } from 'hooks/useMediaScreens';
+import { useSmScreen } from 'hooks/useMediaScreens';
 import { useSnackbar } from 'hooks/useSnackbar';
 import type { Board, IPropertyTemplate, PropertyType } from 'lib/focalboard/board';
 import type { BoardView } from 'lib/focalboard/boardView';
@@ -39,7 +39,7 @@ function CardDetailProperties(props: Props) {
   const intl = useIntl();
   const { showMessage } = useSnackbar();
   const theme = useTheme();
-  const isMdScreen = useMdScreen();
+  const isSmScreen = useSmScreen();
 
   useEffect(() => {
     const newProperty = board.fields.cardProperties.find((property) => property.id === newTemplateId);
@@ -248,7 +248,7 @@ function CardDetailProperties(props: Props) {
                 <Box display={{ base: 'none', md: 'initial' }}>
                   <Menu position='bottom-start' disablePortal={false}>
                     <PropertyTypes
-                      isMobile={!isMdScreen}
+                      isMobile={!isSmScreen}
                       label={intl.formatMessage({
                         id: 'PropertyMenu.selectType',
                         defaultMessage: 'Select property type'
@@ -269,17 +269,17 @@ function CardDetailProperties(props: Props) {
               </MenuWrapper>
             </div>
           </ClickAwayListener>
-          {!isMdScreen && (
+          {!isSmScreen && (
             <MobileDialog
               title={intl.formatMessage({ id: 'PropertyMenu.selectType', defaultMessage: 'Select property type' })}
-              open={openMobileDrawer && !isMdScreen}
+              open={openMobileDrawer && !isSmScreen}
               onClose={() => setOpenMobileDrawer(false)}
               PaperProps={{ sx: { background: theme.palette.background.light } }}
               contentSx={{ pr: 0, pb: 0, pl: 1 }}
             >
               <Box display='flex' gap={1} flexDirection='column' flex={1} height='100%'>
                 <PropertyTypes
-                  isMobile={!isMdScreen}
+                  isMobile={!isSmScreen}
                   label={intl.formatMessage({
                     id: 'PropertyMenu.selectType',
                     defaultMessage: 'Select property type'
