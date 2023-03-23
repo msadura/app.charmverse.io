@@ -1,10 +1,10 @@
 import { useTheme } from '@emotion/react';
 import { Box, ClickAwayListener } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { MobileDialog } from 'components/common/MobileDialog/MobileDialog';
-import { useSmScreen } from 'hooks/useMediaScreens';
+import { useSmallScreen } from 'hooks/useMediaScreens';
 import { useSnackbar } from 'hooks/useSnackbar';
 import type { Board, IPropertyTemplate, PropertyType } from 'lib/focalboard/board';
 import type { BoardView } from 'lib/focalboard/boardView';
@@ -39,7 +39,7 @@ function CardDetailProperties(props: Props) {
   const intl = useIntl();
   const { showMessage } = useSnackbar();
   const theme = useTheme();
-  const isSmScreen = useSmScreen();
+  const isSmallScreen = useSmallScreen();
 
   useEffect(() => {
     const newProperty = board.fields.cardProperties.find((property) => property.id === newTemplateId);
@@ -190,6 +190,30 @@ function CardDetailProperties(props: Props) {
     }
   }
 
+  const propertyTypes = useMemo(
+    () =>
+      activeView && (
+        <PropertyTypes
+          isMobile={isSmallScreen}
+          label={intl.formatMessage({
+            id: 'PropertyMenu.selectType',
+            defaultMessage: 'Select property type'
+          })}
+          onTypeSelected={async (type) => {
+            const template: IPropertyTemplate = {
+              id: Utils.createGuid(IDType.BlockID),
+              name: typeDisplayName(intl, type),
+              type,
+              options: []
+            };
+            const templateId = await mutator.insertPropertyTemplate(board, activeView, -1, template);
+            setNewTemplateId(templateId);
+          }}
+        />
+      ),
+    [mutator, board, activeView, isSmallScreen]
+  );
+
   return (
     <div className='octo-propertylist'>
       {board.fields.cardProperties.map((propertyTemplate: IPropertyTemplate) => {
@@ -245,56 +269,24 @@ function CardDetailProperties(props: Props) {
                 >
                   <FormattedMessage id='CardDetail.add-property' defaultMessage='+ Add a property' />
                 </Button>
-                <Box display={{ base: 'none', md: 'initial' }}>
+                {!isSmallScreen && (
                   <Menu position='bottom-start' disablePortal={false}>
-                    <PropertyTypes
-                      isMobile={!isSmScreen}
-                      label={intl.formatMessage({
-                        id: 'PropertyMenu.selectType',
-                        defaultMessage: 'Select property type'
-                      })}
-                      onTypeSelected={async (type) => {
-                        const template: IPropertyTemplate = {
-                          id: Utils.createGuid(IDType.BlockID),
-                          name: typeDisplayName(intl, type),
-                          type,
-                          options: []
-                        };
-                        const templateId = await mutator.insertPropertyTemplate(board, activeView, -1, template);
-                        setNewTemplateId(templateId);
-                      }}
-                    />
+                    {propertyTypes}
                   </Menu>
-                </Box>
+                )}
               </MenuWrapper>
             </div>
           </ClickAwayListener>
-          {!isSmScreen && (
+          {isSmallScreen && (
             <MobileDialog
               title={intl.formatMessage({ id: 'PropertyMenu.selectType', defaultMessage: 'Select property type' })}
-              open={openMobileDrawer && !isSmScreen}
+              open={openMobileDrawer && isSmallScreen}
               onClose={() => setOpenMobileDrawer(false)}
               PaperProps={{ sx: { background: theme.palette.background.light } }}
               contentSx={{ pr: 0, pb: 0, pl: 1 }}
             >
               <Box display='flex' gap={1} flexDirection='column' flex={1} height='100%'>
-                <PropertyTypes
-                  isMobile={!isSmScreen}
-                  label={intl.formatMessage({
-                    id: 'PropertyMenu.selectType',
-                    defaultMessage: 'Select property type'
-                  })}
-                  onTypeSelected={async (type) => {
-                    const template: IPropertyTemplate = {
-                      id: Utils.createGuid(IDType.BlockID),
-                      name: typeDisplayName(intl, type),
-                      type,
-                      options: []
-                    };
-                    const templateId = await mutator.insertPropertyTemplate(board, activeView, -1, template);
-                    setNewTemplateId(templateId);
-                  }}
-                />
+                {propertyTypes}
               </Box>
             </MobileDialog>
           )}

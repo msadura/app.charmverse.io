@@ -9,10 +9,6 @@ export function useMdScreen() {
   return useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
 }
 
-export function useSmScreen() {
-  return useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'));
-}
-
 export function useSmallScreen() {
   return useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 }

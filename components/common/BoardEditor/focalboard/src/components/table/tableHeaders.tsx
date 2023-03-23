@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl';
 
 import { MobileDialog } from 'components/common/MobileDialog/MobileDialog';
 import { useDateFormatter } from 'hooks/useDateFormatter';
-import { useSmScreen } from 'hooks/useMediaScreens';
+import { useSmallScreen } from 'hooks/useMediaScreens';
 import type { IPropertyTemplate, Board } from 'lib/focalboard/board';
 import type { BoardView, ISortOption } from 'lib/focalboard/boardView';
 import { createBoardView } from 'lib/focalboard/boardView';
@@ -41,7 +41,7 @@ function TableHeaders(props: Props): JSX.Element {
   const { board, cards, activeView, resizingColumn, views, offset, columnRefs } = props;
   const intl = useIntl();
   const theme = useTheme();
-  const isSmScreen = useSmScreen();
+  const isSmallScreen = useSmallScreen();
   const { formatDateTime, formatDate } = useDateFormatter();
   const [openMobileDrawer, setOpenMobileDrawer] = useState(false);
   const onAutoSizeColumn = useCallback(
@@ -154,6 +154,29 @@ function TableHeaders(props: Props): JSX.Element {
     titleSorted = titleSortOption.reversed ? 'down' : 'up';
   }
 
+  const propertyTypes = useMemo(
+    () =>
+      activeView && (
+        <PropertyTypes
+          label={intl.formatMessage({
+            id: 'PropertyMenu.selectType',
+            defaultMessage: 'Select property type'
+          })}
+          onTypeSelected={async (type) => {
+            const template: IPropertyTemplate = {
+              id: Utils.createGuid(IDType.BlockID),
+              name: typeDisplayName(intl, type),
+              type,
+              options: []
+            };
+            const templateId = await mutator.insertPropertyTemplate(board, activeView, -1, template);
+            // setNewTemplateId(templateId)
+          }}
+        />
+      ),
+    [mutator, board, activeView, isSmallScreen]
+  );
+
   return (
     <div className='octo-table-header TableHeaders' id='mainBoardHeader'>
       {visiblePropertyTemplates.map((template) => {
@@ -183,62 +206,31 @@ function TableHeaders(props: Props): JSX.Element {
       })}
       {/* empty column for actions */}
       <div className='octo-table-cell header-cell' style={{ flexGrow: 1, borderRight: '0 none' }}>
-        {!props.readOnly && !props.readOnlySourceData && (
-          <>
-            <ClickAwayListener onClickAway={() => setOpenMobileDrawer(false)}>
-              <MenuWrapper onClose={() => setOpenMobileDrawer(false)}>
-                <Button
-                  onClick={() => {
-                    setOpenMobileDrawer(!openMobileDrawer);
-                  }}
-                >
-                  <AddIcon fontSize='small' />
-                </Button>
-                <Menu disablePortal={false}>
-                  <PropertyTypes
-                    label={intl.formatMessage({
-                      id: 'PropertyMenu.selectType',
-                      defaultMessage: 'Select property type'
-                    })}
-                    onTypeSelected={async (type) => {
-                      const template: IPropertyTemplate = {
-                        id: Utils.createGuid(IDType.BlockID),
-                        name: typeDisplayName(intl, type),
-                        type,
-                        options: []
-                      };
-                      const templateId = await mutator.insertPropertyTemplate(board, activeView, -1, template);
-                      // setNewTemplateId(templateId)
-                    }}
-                  />
-                </Menu>
-              </MenuWrapper>
-            </ClickAwayListener>
-            <MobileDialog
-              title={intl.formatMessage({ id: 'PropertyMenu.selectType', defaultMessage: 'Select property type' })}
-              open={openMobileDrawer && !isSmScreen}
-              onClose={() => setOpenMobileDrawer(false)}
-              PaperProps={{ sx: { background: theme.palette.background.light } }}
-              contentSx={{ pr: 0, pb: 0, pl: 1 }}
-            >
-              <Box display='flex' gap={1} flexDirection='column' flex={1} height='100%'>
-                <PropertyTypes
-                  isMobile={!isSmScreen}
-                  label={intl.formatMessage({ id: 'PropertyMenu.selectType', defaultMessage: 'Select property type' })}
-                  onTypeSelected={async (type) => {
-                    const template: IPropertyTemplate = {
-                      id: Utils.createGuid(IDType.BlockID),
-                      name: typeDisplayName(intl, type),
-                      type,
-                      options: []
-                    };
-                    const templateId = await mutator.insertPropertyTemplate(board, activeView, -1, template);
-                    // setNewTemplateId(templateId)
-                  }}
-                />
-              </Box>
-            </MobileDialog>
-          </>
+        {!props.readOnly && !props.readOnlySourceData && !isSmallScreen ? (
+          <ClickAwayListener onClickAway={() => setOpenMobileDrawer(false)}>
+            <MenuWrapper onClose={() => setOpenMobileDrawer(false)}>
+              <Button
+                onClick={() => {
+                  setOpenMobileDrawer(!openMobileDrawer);
+                }}
+              >
+                <AddIcon fontSize='small' />
+              </Button>
+              <Menu disablePortal={false}>{propertyTypes}</Menu>
+            </MenuWrapper>
+          </ClickAwayListener>
+        ) : (
+          <MobileDialog
+            title={intl.formatMessage({ id: 'PropertyMenu.selectType', defaultMessage: 'Select property type' })}
+            open={openMobileDrawer && isSmallScreen}
+            onClose={() => setOpenMobileDrawer(false)}
+            PaperProps={{ sx: { background: theme.palette.background.light } }}
+            contentSx={{ pr: 0, pb: 0, pl: 1 }}
+          >
+            <Box display='flex' gap={1} flexDirection='column' flex={1} height='100%'>
+              {propertyTypes}
+            </Box>
+          </MobileDialog>
         )}
       </div>
     </div>
