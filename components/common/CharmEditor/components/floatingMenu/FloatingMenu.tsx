@@ -1,16 +1,18 @@
 /* eslint-disable react/no-unused-prop-types */
-import { usePluginState, useEditorViewContext } from '@bangle.dev/react';
-import { selectionTooltip } from '@bangle.dev/tooltip';
+import { usePluginState } from '@bangle.dev/react';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { Box } from '@mui/system';
 import { bindTrigger } from 'material-ui-popup-state';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 import type { PluginKey } from 'prosemirror-state';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import reactDOM from 'react-dom';
 
 import Button from 'components/common/Button';
+import { useSmallScreen } from 'hooks/useMediaScreens';
 import type { IPagePermissionFlags } from 'lib/permissions/pages';
 
 import { InlineCommentSubMenu } from '../inlineComment/inlineComment.components';
@@ -48,10 +50,29 @@ type MenuProps = {
   palettePluginKey?: PluginKey;
 };
 
+function MobileFloatingMenuContainer({ children }: { children: ReactNode }) {
+  return (
+    <Box position='fixed' bottom={10}>
+      {children}
+    </Box>
+  );
+}
+
 export default function FloatingMenuComponent(props: MenuProps) {
+  const isSmallScreen = useSmallScreen();
   const menuState = usePluginState(props.pluginKey);
   const renderElement = MenuByType({ ...props });
-  return renderElement ? reactDOM.createPortal(renderElement, menuState.tooltipContentDOM) : null;
+
+  const renderMenu =
+    isSmallScreen && renderElement ? (
+      <MobileFloatingMenuContainer {...props}>{renderElement}</MobileFloatingMenuContainer>
+    ) : (
+      renderElement
+    );
+
+  const menuPortalContainer = isSmallScreen ? document.body : menuState.tooltipContentDOM;
+
+  return renderElement ? reactDOM.createPortal(renderMenu, menuPortalContainer) : null;
 }
 
 function MenuByType(props: MenuProps) {

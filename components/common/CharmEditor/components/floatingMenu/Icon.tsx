@@ -7,7 +7,7 @@ export type MenuButtonProps = {
   isActive?: boolean;
   isDisabled?: boolean;
   hints: string[];
-  onMouseDown?: React.MouseEventHandler;
+  onClick?: React.MouseEventHandler;
 };
 
 const StyledMenuButton = styled(ListItemButton, { shouldForwardProp: (prop) => prop !== 'active' })<{
@@ -18,6 +18,7 @@ const StyledMenuButton = styled(ListItemButton, { shouldForwardProp: (prop) => p
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   padding: ${({ theme }) => theme.spacing(0.75, 0.5)};
   ${(props) => (props.active ? 'color: var(--primary-color);' : '')}
 
@@ -29,7 +30,7 @@ const StyledMenuButton = styled(ListItemButton, { shouldForwardProp: (prop) => p
   }
 `;
 
-export function MenuButton({ children, isActive = false, isDisabled, hints, onMouseDown }: MenuButtonProps) {
+export function MenuButton({ children, isActive = false, isDisabled, hints, onClick }: MenuButtonProps) {
   return (
     <Tooltip
       title={
@@ -59,10 +60,14 @@ export function MenuButton({ children, isActive = false, isDisabled, hints, onMo
       <ListItem disablePadding component='div'>
         <StyledMenuButton
           disabled={isDisabled}
-          sx={{ pointerEvents: isDisabled ? 'none' : 'initial' }}
+          sx={{
+            pointerEvents: isDisabled ? 'none' : 'initial',
+            minWidth: { xs: 36, md: 'initial' },
+            mionHeight: { xs: 36, md: 'initial' }
+          }}
           aria-label={hints.join('\n')}
           active={isActive}
-          onMouseDown={onMouseDown}
+          onClick={onClick}
         >
           {children}
         </StyledMenuButton>
