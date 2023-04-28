@@ -7,7 +7,6 @@ import { Box } from '@mui/system';
 import { bindTrigger } from 'material-ui-popup-state';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 import type { PluginKey } from 'prosemirror-state';
-import type { ReactNode } from 'react';
 import { useState } from 'react';
 import reactDOM from 'react-dom';
 
@@ -36,6 +35,7 @@ import {
   UnderlineButton
 } from './MenuButtons';
 import { MenuGroup } from './MenuGroup';
+import { MobileFloatingMenuContainer } from './MobileFloatingMenuContainer';
 
 type FloatingMenuVariant = 'defaultMenu' | 'inlineCommentSubMenu' | 'commentOnlyMenu';
 
@@ -50,14 +50,6 @@ type MenuProps = {
   palettePluginKey?: PluginKey;
 };
 
-function MobileFloatingMenuContainer({ children }: { children: ReactNode }) {
-  return (
-    <Box position='fixed' bottom={10}>
-      {children}
-    </Box>
-  );
-}
-
 export default function FloatingMenuComponent(props: MenuProps) {
   const isSmallScreen = useSmallScreen();
   const menuState = usePluginState(props.pluginKey);
@@ -65,7 +57,7 @@ export default function FloatingMenuComponent(props: MenuProps) {
 
   const renderMenu =
     isSmallScreen && renderElement ? (
-      <MobileFloatingMenuContainer {...props}>{renderElement}</MobileFloatingMenuContainer>
+      <MobileFloatingMenuContainer>{renderElement}</MobileFloatingMenuContainer>
     ) : (
       renderElement
     );

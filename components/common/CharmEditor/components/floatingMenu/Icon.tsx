@@ -63,11 +63,12 @@ export function MenuButton({ children, isActive = false, isDisabled, hints, onCl
           sx={{
             pointerEvents: isDisabled ? 'none' : 'initial',
             minWidth: { xs: 36, md: 'initial' },
-            mionHeight: { xs: 36, md: 'initial' }
+            minHeight: { xs: 36, md: 'initial' }
           }}
           aria-label={hints.join('\n')}
           active={isActive}
-          onClick={onClick}
+          onPointerDown={onClick}
+          onMouseDown={onClick}
         >
           {children}
         </StyledMenuButton>

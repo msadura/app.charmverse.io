@@ -1,15 +1,17 @@
-export function resizeHandler(input: HTMLElement, menu: HTMLElement) {
-  let height = window?.visualViewport?.height;
-  const viewport = window.visualViewport;
+export function resizeHandler() {
+  let height = window.visualViewport?.height;
+  const windowHeight = window.innerHeight;
+  const menu = document.getElementById('floatingMenu');
 
-  window.addEventListener('scroll', () => input.blur());
-  window?.visualViewport?.addEventListener('resize', () => {
-    if (!height || !viewport) {
-      return;
-    }
-    if (!/iPhone|iPad|iPod/.test(window.navigator.userAgent)) {
-      height = viewport.height;
-    }
-    menu.style.bottom = `${height - viewport.height + 10}px`;
-  });
+  if (!height || !windowHeight) {
+    return;
+  }
+
+  if (!/iPhone|iPod|iPad/.test(navigator.platform)) {
+    height = windowHeight;
+  }
+
+  if (menu) {
+    menu.style.bottom = `${windowHeight - height + 20}px`;
+  }
 }
