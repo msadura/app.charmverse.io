@@ -14,7 +14,7 @@ export function MobileFloatingMenuContainer({ children }: { children: ReactNode 
     return () => {
       window.removeEventListener('resize', resizeHandler);
     };
-  }, [resizeHandler]);
+  }, []);
 
   return (
     <Box id='floatingMenu' position='fixed' mx='auto' bottom={20} left={0} right={0} width='556px'>
