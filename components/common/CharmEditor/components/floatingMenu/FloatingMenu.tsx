@@ -3,7 +3,6 @@ import { usePluginState } from '@bangle.dev/react';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { Box } from '@mui/system';
 import { bindTrigger } from 'material-ui-popup-state';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 import type { PluginKey } from 'prosemirror-state';
@@ -12,6 +11,7 @@ import reactDOM from 'react-dom';
 
 import Button from 'components/common/Button';
 import { useSmallScreen } from 'hooks/useMediaScreens';
+import { useMobileKeyboard } from 'hooks/useMobileKeyboard';
 import type { IPagePermissionFlags } from 'lib/permissions/pages';
 
 import { InlineCommentSubMenu } from '../inlineComment/inlineComment.components';
@@ -54,15 +54,25 @@ export default function FloatingMenuComponent(props: MenuProps) {
   const isSmallScreen = useSmallScreen();
   const menuState = usePluginState(props.pluginKey);
   const renderElement = MenuByType({ ...props });
+  const mobileKeyboardHeight = useMobileKeyboard();
+
+  if (isSmallScreen) {
+    const tooltipContainer = (menuState.tooltipContentDOM as HTMLElement).parentElement;
+    if (tooltipContainer) {
+      tooltipContainer.style.position = 'fixed';
+      tooltipContainer.style.bottom = `${mobileKeyboardHeight}px`;
+      tooltipContainer.style.transform = 'translate(0)';
+    }
+  }
 
   const renderMenu =
     isSmallScreen && renderElement ? (
-      <MobileFloatingMenuContainer>{renderElement}</MobileFloatingMenuContainer>
+      <MobileFloatingMenuContainer keyboardSpacing={mobileKeyboardHeight}>{renderElement}</MobileFloatingMenuContainer>
     ) : (
       renderElement
     );
 
-  const menuPortalContainer = isSmallScreen ? document.body : menuState.tooltipContentDOM;
+  const menuPortalContainer = menuState.tooltipContentDOM;
 
   return renderElement ? reactDOM.createPortal(renderMenu, menuPortalContainer) : null;
 }

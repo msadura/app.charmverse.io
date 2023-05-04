@@ -1,17 +1,29 @@
-export function resizeHandler() {
-  let height = window.visualViewport?.height;
-  const windowHeight = window.innerHeight;
-  const menu = document.getElementById('floatingMenu');
+import { useEffect, useRef, useState } from 'react';
 
-  if (!height || !windowHeight) {
-    return;
-  }
+export function useMobileKeyboard() {
+  const isIOS = /iPhone|iPod|iPad/.test(navigator?.platform);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-  if (!/iPhone|iPod|iPad/.test(navigator.platform)) {
-    height = windowHeight;
-  }
+  const resizeHandler = useRef(() => {
+    const windowHeight = window.innerHeight;
+    const height = isIOS ? window.visualViewport?.height : windowHeight;
 
-  if (menu) {
-    menu.style.bottom = `${windowHeight - height + 20}px`;
-  }
+    if (!height) {
+      return;
+    }
+
+    const kHeight = windowHeight - height;
+
+    setKeyboardHeight(kHeight);
+  }).current;
+
+  useEffect(() => {
+    window.visualViewport?.addEventListener('resize', resizeHandler);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', resizeHandler);
+    };
+  }, []);
+
+  return keyboardHeight;
 }

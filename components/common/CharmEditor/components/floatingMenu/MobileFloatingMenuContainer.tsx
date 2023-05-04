@@ -1,23 +1,15 @@
 import { Box } from '@mui/system';
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
 
-import { resizeHandler } from 'hooks/useMobileKeyboard';
-
-export function MobileFloatingMenuContainer({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    if (typeof window === undefined) {
-      return;
-    }
-
-    window.addEventListener('resize', resizeHandler);
-    return () => {
-      window.removeEventListener('resize', resizeHandler);
-    };
-  }, []);
-
+export function MobileFloatingMenuContainer({
+  children,
+  keyboardSpacing = 0
+}: {
+  children: ReactNode;
+  keyboardSpacing: number;
+}) {
   return (
-    <Box id='floatingMenu' position='fixed' mx='auto' bottom={20} left={0} right={0} width='556px'>
+    <Box position='fixed' left={0} right={0} bottom={keyboardSpacing} mx='auto'>
       <Box width='100%' height='100%'>
         {children}
       </Box>
