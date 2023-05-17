@@ -18,6 +18,13 @@ const StyledMenu = styled(Paper, { shouldForwardProp: (prop: string) => prop !==
     margin: ${({ theme }) => theme.spacing(2, 0.5)};
     ${({ noScroll }) => (noScroll ? '' : 'overflow-x: auto')};
   }
+
+  ${(props) => props.theme.breakpoints.down('sm')} {
+    border-radius: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100vw;
+  }
 `;
 
 export function Menu({
